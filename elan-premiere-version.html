@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7657f6">
+<title>Élan — Ma progression</title>
+<style>
+:root{--bg:#f6f4ff;--ink:#201b35;--muted:#77718c;--purple:#7657f6;--pink:#ff6b9a;--orange:#ffad55;--mint:#43c6a5;--card:#fff;--line:#eeeaf8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:90px}
+header{padding:26px 20px 20px;background:linear-gradient(135deg,#7657f6,#b36af7 55%,#ff83ad);color:white;border-radius:0 0 28px 28px}
+.top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;letter-spacing:1.5px;font-size:13px;opacity:.9}.date{font-size:12px;opacity:.85}
+h1{font-size:30px;line-height:1.08;margin:24px 0 8px}header p{margin:0;opacity:.9;font-size:14px}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.stat{background:#ffffff24;border:1px solid #ffffff40;border-radius:17px;padding:13px}.stat b{display:block;font-size:25px}.stat span{font-size:11px;opacity:.9}
+main{padding:18px 16px;max-width:680px;margin:auto}.section-head{display:flex;align-items:center;justify-content:space-between;margin:19px 2px 12px}.section-head h2{font-size:18px;margin:0}.small{font-size:12px;color:var(--muted)}
+button{font:inherit;border:0;cursor:pointer}.primary{background:var(--purple);color:#fff;border-radius:13px;padding:11px 15px;font-weight:700}.ghost{background:#f0edff;color:var(--purple);border-radius:11px;padding:9px 12px;font-weight:700}
+.themes{display:flex;gap:9px;overflow:auto;padding:2px 0 8px}.theme-chip{white-space:nowrap;background:white;border:1px solid var(--line);border-radius:30px;padding:10px 14px;color:var(--muted);font-weight:700}.theme-chip.active{background:var(--ink);color:white;border-color:var(--ink)}
+.cards{display:grid;gap:11px}.card{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:15px;box-shadow:0 5px 18px #30205b08}.cardtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.goalname{font-weight:800;font-size:16px}.tag{font-size:10px;border-radius:30px;padding:5px 8px;background:#f1edff;color:var(--purple);font-weight:800}.sub{font-size:12px;color:var(--muted);margin-top:4px}.value-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px}.value{font-size:26px;font-weight:900}.unit{font-size:12px;color:var(--muted);font-weight:600}.actions{display:flex;gap:8px}.round{width:38px;height:38px;border-radius:13px;background:#f0edff;color:var(--purple);font-size:22px;font-weight:700}.round.plus{background:var(--purple);color:white}.bar{height:7px;border-radius:10px;background:#f0edf7;margin-top:12px;overflow:hidden}.fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#7657f6,#ff78a9)}
+.empty{text-align:center;padding:24px;color:var(--muted);background:white;border-radius:18px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:5}nav button{background:none;color:var(--muted);font-size:11px;font-weight:700}nav button span{display:block;font-size:20px;margin-bottom:3px}nav button.active{color:var(--purple)}
+.modal{position:fixed;inset:0;background:#17122b88;display:none;align-items:flex-end;z-index:10}.modal.show{display:flex}.sheet{background:white;border-radius:24px 24px 0 0;padding:22px 18px 32px;width:100%;max-height:90vh;overflow:auto}.sheet h3{margin:0 0 16px;font-size:21px}label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 6px}input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fbfaff;color:var(--ink)}.rowbtn{display:flex;gap:9px;margin-top:18px}.rowbtn button{flex:1;padding:13px;border-radius:13px;font-weight:800}.cancel{background:#f1eff7;color:var(--muted)}.save{background:var(--purple);color:white}
+.chartbox{background:white;border-radius:19px;padding:16px;border:1px solid var(--line)}canvas{width:100%;height:190px}
+.toast{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:10px 15px;border-radius:30px;font-size:12px;display:none;z-index:20}
+</style>
+</head>
+<body>
+<header>
+ <div class="top"><div class="brand">✦ ÉLAN / MA PROGRESSION</div><div class="date" id="today"></div></div>
+ <h1>Un petit pas.<br>Un grand changement.</h1>
+ <p>Chaque jour, fais grandir tes habitudes.</p>
+ <div class="summary">
+  <div class="stat"><b id="count">0</b><span>OBJECTIFS suivis</span></div>
+  <div class="stat"><b id="done">0</b><span>SAISIES aujourd'hui</span></div>
+ </div>
+</header>
+<main>
+ <div class="section-head"><h2>Mes univers</h2><button class="ghost" onclick="openTheme()">＋ Thème</button></div>
+ <div class="themes" id="themes"></div>
+ <div class="section-head"><h2 id="listTitle">Mes objectifs</h2><button class="primary" onclick="openGoal()">＋ Ajouter</button></div>
+ <div class="cards" id="goals"></div>
+ <div class="section-head"><h2>Ma progression</h2><span class="small">7 derniers jours</span></div>
+ <div class="chartbox"><div class="small" id="chartLabel">Activité quotidienne · toutes saisies</div><canvas id="chart" width="600" height="240"></canvas></div>
+ <div class="section-head"><h2>Mes données</h2></div>
+ <div class="card"><div class="sub">Tes données restent enregistrées dans ce navigateur sur cet iPhone.</div><div class="rowbtn"><button class="ghost" onclick="exportData()">Exporter une sauvegarde</button><button class="ghost" onclick="document.getElementById('importFile').click()">Importer</button></div><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"></div>
+ <p class="small" style="text-align:center;margin:22px 0">ÉLAN · Ta progression t'appartient ✨</p>
+</main>
+<nav>
+ <button class="active" onclick="scrollTo({top:0,behavior:'smooth'})"><span>⌂</span>Accueil</button>
+ <button onclick="document.querySelector('.chartbox').scrollIntoView({behavior:'smooth'})"><span>▥</span>Stats</button>
+ <button onclick="openGoal()"><span>＋</span>Ajouter</button>
+</nav>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><h3 id="modalTitle">Nouvel objectif</h3><div id="form"></div><div class="rowbtn"><button class="cancel" onclick="closeModal()">Annuler</button><button class="save" onclick="saveForm()">Enregistrer</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const todayKey=()=>new Date().toLocaleDateString('en-CA');
+const seed={themes:[{id:'sport',name:'💪 Sport',color:'#7657f6'},{id:'bien',name:'🌿 Bien-être',color:'#43c6a5'},{id:'discipline',name:'🔥 Discipline',color:'#ff6b9a'}],goals:[
+{id:'g1',theme:'sport',name:'Pompes',type:'counter',unit:'pompes',value:0,target:30,logs:{}},
+{id:'g2',theme:'bien',name:'Lecture',type:'counter',unit:'minutes',value:0,target:20,logs:{}},
+{id:'g3',theme:'discipline',name:'Jours sans X',type:'streak',unit:'jours',value:0,target:30,logs:{}}
+]};
+let db;try{db=JSON.parse(localStorage.getItem('elan-data'))||seed}catch(e){db=seed}
+let selected='all',editing=null,mode='';
+const save=()=>localStorage.setItem('elan-data',JSON.stringify(db));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+document.getElementById('today').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+function render(){
+ const th=document.getElementById('themes');th.innerHTML=`<button class="theme-chip ${selected==='all'?'active':''}" onclick="selectTheme('all')">✨ Tout</button>`+db.themes.map(t=>`<button class="theme-chip ${selected===t.id?'active':''}" onclick="selectTheme('${t.id}')">${esc(t.name)}</button>`).join('');
+ const list=db.goals.filter(g=>selected==='all'||g.theme===selected);document.getElementById('listTitle').textContent=selected==='all'?'Mes objectifs':(db.themes.find(t=>t.id===selected)?.name||'Mes objectifs');
+ document.getElementById('count').textContent=db.goals.length;document.getElementById('done').textContent=db.goals.filter(g=>(g.logs[todayKey()]||0)>0).length;
+ document.getElementById('goals').innerHTML=list.length?list.map(g=>{let v=g.logs[todayKey()]||0,p=g.target?Math.min(100,v/g.target*100):0;return `<div class="card"><div class="cardtop"><div><div class="goalname">${esc(g.name)}</div><div class="sub">${g.type==='streak'?'Compteur de jours':'Compteur quotidien'} · ${esc(g.unit)}</div></div><span class="tag">${g.type==='streak'?'SÉRIE':'QUOTIDIEN'}</span></div><div class="value-row"><div><span class="value">${v}</span> <span class="unit">${esc(g.unit)} aujourd'hui</span></div><div class="actions"><button class="round" onclick="change('${g.id}',-1)">−</button><button class="round plus" onclick="change('${g.id}',1)">＋</button><button class="round" style="font-size:15px" onclick="editGoal('${g.id}')">✎</button></div></div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="sub" style="margin-top:7px">${g.target?`${v} / ${g.target} ${esc(g.unit)} · ${Math.round(p)} % de l'objectif`:'Aucun objectif fixé'}</div></div>`}).join(''):'<div class="empty">Aucun objectif ici. Ajoute ton premier défi ! ✨</div>';
+ drawChart();
+}
+function selectTheme(id){selected=id;render()}
+function change(id,delta){let g=db.goals.find(x=>x.id===id),k=todayKey();g.logs[k]=Math.max(0,(g.logs[k]||0)+delta);save();render();if(delta>0)toast('Bien joué ! Chaque effort compte 💪')}
+function openTheme(){mode='theme';editing=null;document.getElementById('modalTitle').textContent='Créer un thème';document.getElementById('form').innerHTML='<label>Nom du thème</label><input id="fName" placeholder="Ex. 🧠 Apprentissage">';document.getElementById('modal').classList.add('show')}
+function openGoal(){mode='goal';editing=null;document.getElementById('modalTitle').textContent='Nouvel objectif';document.getElementById('form').innerHTML=`<label>Nom de l'objectif</label><input id="fName" placeholder="Ex. Pompes"><label>Thème</label><select id="fTheme">${db.themes.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select><label>Type de suivi</label><select id="fType"><option value="counter">Compteur quotidien (+1 à chaque action)</option><option value="streak">Compteur de jours / série</option></select><label>Unité</label><input id="fUnit" placeholder="Ex. répétitions, minutes, jours"><label>Objectif quotidien (facultatif)</label><input id="fTarget" type="number" min="0" placeholder="Ex. 30">`;document.getElementById('modal').classList.add('show')}
+function editGoal(id){let g=db.goals.find(x=>x.id===id);editing=id;mode='goal';openGoal();document.getElementById('modalTitle').textContent='Modifier l’objectif';document.getElementById('fName').value=g.name;document.getElementById('fTheme').value=g.theme;document.getElementById('fType').value=g.type;document.getElementById('fUnit').value=g.unit;document.getElementById('fTarget').value=g.target||''}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function saveForm(){let name=document.getElementById('fName').value.trim();if(!name){toast('Ajoute un nom 🙂');return}if(mode==='theme'){let id='t'+Date.now();db.themes.push({id,name,color:'#7657f6'});selected=id}else{let g={id:editing||'g'+Date.now(),theme:document.getElementById('fTheme').value,name,type:document.getElementById('fType').value,unit:document.getElementById('fUnit').value.trim()||'fois',target:Number(document.getElementById('fTarget').value)||0,logs:editing?db.goals.find(x=>x.id===editing).logs:{}};if(editing)db.goals=db.goals.map(x=>x.id===editing?g:x);else db.goals.push(g)}save();closeModal();render();toast('Enregistré avec succès ✨')}
+function drawChart(){let c=document.getElementById('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let vals=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let k=d.toLocaleDateString('en-CA');vals.push(db.goals.reduce((s,g)=>s+(g.logs[k]||0),0))}let max=Math.max(5,...vals),pad=35;ctx.strokeStyle='#eeeaf8';ctx.lineWidth=1;for(let j=0;j<4;j++){let y=pad+j*(h-pad*2)/3;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke()}let pts=vals.map((v,i)=>({x:pad+i*(w-pad*2)/6,y:h-pad-v/max*(h-pad*2)}));ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#7657f6';ctx.lineWidth=5;ctx.lineCap='round';ctx.stroke();pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,6,0,7);ctx.fillStyle='#ff6b9a';ctx.fill();ctx.fillStyle='#77718c';ctx.font='16px sans-serif';ctx.textAlign='center';ctx.fillText(['D-6','D-5','D-4','D-3','D-2','Hier',"Auj."][i],p.x,h-7);ctx.fillStyle='#201b35';ctx.font='bold 14px sans-serif';ctx.fillText(vals[i],p.x,p.y-12)})}
+function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='elan-sauvegarde.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.themes||!x.goals)throw 0;db=x;save();render();toast('Sauvegarde importée')}catch(_){toast('Fichier invalide')}};r.readAsText(f)}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',1900)}
+render();
+</script>
+</body>
+</html>
