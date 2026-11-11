@@ -70,6 +70,39 @@ function render(){
  document.getElementById('goals').innerHTML=list.length?list.map(g=>{let v=g.logs[todayKey()]||0,p=g.target?Math.min(100,v/g.target*100):0;return `<div class="card"><div class="cardtop"><div><div class="goalname">${esc(g.name)}</div><div class="sub">${g.type==='streak'?'Compteur de jours':'Compteur quotidien'} · ${esc(g.unit)}</div></div><span class="tag">${g.type==='streak'?'SÉRIE':'QUOTIDIEN'}</span></div><div class="value-row"><div><span class="value">${v}</span> <span class="unit">${esc(g.unit)} aujourd'hui</span></div><div class="actions"><button class="round" onclick="change('${g.id}',-1)">−</button><button class="round plus" onclick="change('${g.id}',1)">＋</button><button class="round" style="font-size:15px" onclick="editGoal('${g.id}')">✎</button><button onclick="deleteGoal('${g.id}')">🗑️</button></div></div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="sub" style="margin-top:7px">${g.target?`${v} / ${g.target} ${esc(g.unit)} · ${Math.round(p)} % de l'objectif`:'Aucun objectif fixé'}</div></div>`}).join(''):'<div class="empty">Aucun objectif ici. Ajoute ton premier défi ! ✨</div>';
  drawChart();
 }
+ 
+function buildGoalForm(g) {
+  document.getElementById('form').innerHTML = `
+    <label>Nom de l'objectif</label>
+    <input id="fName" placeholder="Ex. Pompes">
+
+    <label>Thème</label>
+    <select id="fTheme">
+      ${db.themes.map(t =>
+        `<option value="${esc(t.id)}">${esc(t.name)}</option>`
+      ).join('')}
+    </select>
+
+    <label>Type de suivi</label>
+    <select id="fType">
+      <option value="counter">Compteur quotidien</option>
+      <option value="streak">Compteur de jours / série</option>
+    </select>
+
+    <label>Unité</label>
+    <input id="fUnit" placeholder="Ex. répétitions, minutes, jours">
+
+    <label>Objectif quotidien (facultatif)</label>
+    <input id="fTarget" type="number" min="0" placeholder="Ex. 30">
+  `;
+
+  document.getElementById('fName').value = g.name || '';
+  document.getElementById('fTheme').value = g.theme || '';
+  document.getElementById('fType').value = g.type || 'counter';
+  document.getElementById('fUnit').value = g.unit || '';
+  document.getElementById('fTarget').value = g.target || '';
+}
+
 function selectTheme(id){selected=id;render()}
 function change(id,delta){let g=db.goals.find(x=>x.id===id),k=todayKey();g.logs[k]=Math.max(0,(g.logs[k]||0)+delta);save();render();if(delta>0)toast('Bien joué ! Chaque effort compte 💪')}
 function openTheme(){mode='theme';editing=null;document.getElementById('modalTitle').textContent='Créer un thème';document.getElementById('form').innerHTML='<label>Nom du thème</label><input id="fName" placeholder="Ex. 🧠 Apprentissage">';document.getElementById('modal').classList.add('show')}
