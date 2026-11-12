@@ -63,11 +63,34 @@ let selected='all',editing=null,mode='';
 const save=()=>localStorage.setItem('elan-data',JSON.stringify(db));
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 document.getElementById('today').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-function render(){
+function getStreak(g) {
+  let count = 0;
+  let date = new Date();
+
+  // Si aujourd'hui n'est pas encore validé,
+  // on commence par vérifier hier.
+  if (!(g.logs[todayKey()] > 0)) {
+    date.setDate(date.getDate() - 1);
+  }
+
+  while (true) {
+    const key = date.toLocaleDateString('en-CA');
+
+    if (!(g.logs[key] > 0)) break;
+
+    count++;
+    date.setDate(date.getDate() - 1);
+  }
+
+  return count;
+}
+ function render(){
  const th=document.getElementById('themes');th.innerHTML=`<button class="theme-chip ${selected==='all'?'active':''}" onclick="selectTheme('all')">✨ Tout</button>`+db.themes.map(t=>`<button class="theme-chip ${selected===t.id?'active':''}" onclick="selectTheme('${t.id}')">${esc(t.name)}</button>`).join('');
  const list=db.goals.filter(g=>selected==='all'||g.theme===selected);document.getElementById('listTitle').textContent=selected==='all'?'Mes objectifs':(db.themes.find(t=>t.id===selected)?.name||'Mes objectifs');
  document.getElementById('count').textContent=db.goals.length;document.getElementById('done').textContent=db.goals.filter(g=>(g.logs[todayKey()]||0)>0).length;
- document.getElementById('goals').innerHTML=list.length?list.map(g=>{let v=g.logs[todayKey()]||0,p=g.target?Math.min(100,v/g.target*100):0;return `<div class="card"><div class="cardtop"><div><div class="goalname">${esc(g.name)}</div><div class="sub">${g.type==='streak'?'Compteur de jours':'Compteur quotidien'} · ${esc(g.unit)}</div></div><span class="tag">${g.type==='streak'?'SÉRIE':'QUOTIDIEN'}</span></div><div class="value-row"><div><span class="value">${v}</span> <span class="unit">${esc(g.unit)} aujourd'hui</span></div><div class="actions"><button class="round" onclick="change('${g.id}',-1)">−</button><button class="round plus" onclick="change('${g.id}',1)">＋</button><button class="round" style="font-size:15px" onclick="editGoal('${g.id}')">✎</button><button onclick="deleteGoal('${g.id}')">🗑️</button></div></div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="sub" style="margin-top:7px">${g.target?`${v} / ${g.target} ${esc(g.unit)} · ${Math.round(p)} % de l'objectif`:'Aucun objectif fixé'}</div></div>`}).join(''):'<div class="empty">Aucun objectif ici. Ajoute ton premier défi ! ✨</div>';
+ document.getElementById('goals').innerHTML=list.length?list.map(g=>{let v=g.logs[todayKey()]||0;
+let progress=g.type==='streak'?getStreak(g):v;
+let p=g.target?Math.min(100,progress/g.target*100):0;return `<div class="card"><div class="cardtop"><div><div class="goalname">${esc(g.name)}</div><div class="sub">${g.type==='streak'?'Compteur de jours':'Compteur quotidien'} · ${esc(g.unit)}</div></div><span class="tag">${g.type==='streak'?'SÉRIE':'QUOTIDIEN'}</span></div><div class="value-row"><div><span class="value">${v}</span> <span class="unit">${esc(g.unit)} aujourd'hui</span></div><div class="actions"><button class="round" onclick="change('${g.id}',-1)">−</button><button class="round plus" onclick="change('${g.id}',1)">＋</button><button class="round" style="font-size:15px" onclick="editGoal('${g.id}')">✎</button><button onclick="deleteGoal('${g.id}')">🗑️</button></div></div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="sub" style="margin-top:7px">${g.target?`${progress} / ${g.target} ${esc(g.unit)} · ${Math.round(p)} % de l'objectif`:'Aucun objectif fixé'}</div></div>`}).join(''):'<div class="empty">Aucun objectif ici. Ajoute ton premier défi ! ✨</div>';
  drawChart();
 }
  
