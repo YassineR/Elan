@@ -16,7 +16,22 @@ main{padding:18px 16px;max-width:680px;margin:auto}.section-head{display:flex;al
 button{font:inherit;border:0;cursor:pointer}.primary{background:var(--purple);color:#fff;border-radius:13px;padding:11px 15px;font-weight:700}.ghost{background:#f0edff;color:var(--purple);border-radius:11px;padding:9px 12px;font-weight:700}
 .themes{display:flex;gap:9px;overflow:auto;padding:2px 0 8px}.theme-chip{white-space:nowrap;background:white;border:1px solid var(--line);border-radius:30px;padding:10px 14px;color:var(--muted);font-weight:700}.theme-chip.active{background:var(--ink);color:white;border-color:var(--ink)}
 .cards{display:grid;gap:11px}.card{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:15px;box-shadow:0 5px 18px #30205b08}.cardtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.goalname{font-weight:800;font-size:16px}.tag{font-size:10px;border-radius:30px;padding:5px 8px;background:#f1edff;color:var(--purple);font-weight:800}.sub{font-size:12px;color:var(--muted);margin-top:4px}.value-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px}.value{font-size:26px;font-weight:900}.unit{font-size:12px;color:var(--muted);font-weight:600}.actions{display:flex;gap:8px}.round{width:38px;height:38px;border-radius:13px;background:#f0edff;color:var(--purple);font-size:22px;font-weight:700}.round.plus{background:var(--purple);color:white}.bar{height:7px;border-radius:10px;background:#f0edf7;margin-top:12px;overflow:hidden}.fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#7657f6,#ff78a9)}
-.empty{text-align:center;padding:24px;color:var(--muted);background:white;border-radius:18px}
+.empty{text-align:center;padding:24px;color:var(--muted);background:white;border-radius:18px} 
+.day-picker{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;margin:4px 0 20px;box-shadow:0 5px 18px #30205b08}
+.day-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.day-nav button{background:#f0edff;color:var(--purple);border-radius:11px;width:40px;height:40px;font-size:22px;font-weight:800}
+.day-center{flex:1;text-align:center;min-width:0}
+.day-center strong{display:block;font-size:17px}
+.day-center span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.day-tools{display:flex;align-items:center;gap:8px;margin-top:11px}
+.day-tools input{flex:1;min-width:0;padding:9px;font-size:13px}
+.day-tools button{white-space:nowrap}
+.day-strip{display:flex;gap:7px;overflow-x:auto;padding:11px 1px 1px;scrollbar-width:none}
+.day-strip::-webkit-scrollbar{display:none}
+.day-chip{flex:0 0 auto;min-width:54px;padding:8px 7px;border-radius:12px;background:#f7f5fc;color:var(--muted);text-align:center;font-size:11px;font-weight:700}
+.day-chip strong{display:block;font-size:15px;margin-top:3px}
+.day-chip.active{background:var(--purple);color:#fff}
+
 nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:5}nav button{background:none;color:var(--muted);font-size:11px;font-weight:700}nav button span{display:block;font-size:20px;margin-bottom:3px}nav button.active{color:var(--purple)}
 .modal{position:fixed;inset:0;background:#17122b88;display:none;align-items:flex-end;z-index:10}.modal.show{display:flex}.sheet{background:white;border-radius:24px 24px 0 0;padding:22px 18px 32px;width:100%;max-height:90vh;overflow:auto}.sheet h3{margin:0 0 16px;font-size:21px}label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 6px}input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fbfaff;color:var(--ink)}.rowbtn{display:flex;gap:9px;margin-top:18px}.rowbtn button{flex:1;padding:13px;border-radius:13px;font-weight:800}.cancel{background:#f1eff7;color:var(--muted)}.save{background:var(--purple);color:white}
 .chartbox{background:white;border-radius:19px;padding:16px;border:1px solid var(--line)}canvas{width:100%;height:190px}
@@ -34,6 +49,26 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:
  </div>
 </header>
 <main>
+ 
+<div class="day-picker">
+  <div class="day-nav">
+    <button onclick="moveDay(-1)">‹</button>
+    <div class="day-center">
+      <strong id="selectedDayLabel"></strong>
+      <span id="selectedDayHint"></span>
+    </div>
+    <button id="nextDayBtn" onclick="moveDay(1)">›</button>
+  </div>
+
+  <div class="day-tools">
+    <input id="dateInput" type="date"
+      onchange="selectDate(this.value)">
+    <button class="ghost" onclick="goToday()">Aujourd'hui</button>
+  </div>
+
+  <div class="day-strip" id="dayStrip"></div>
+</div>
+
  <div class="section-head"><h2>Mes univers</h2><button class="ghost" onclick="openTheme()">＋ Thème</button></div>
  <div class="themes" id="themes"></div>
  <div class="section-head"><h2 id="listTitle">Mes objectifs</h2><button class="primary" onclick="openGoal()">＋ Ajouter</button></div>
@@ -52,7 +87,37 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><h3 id="modalTitle">Nouvel objectif</h3><div id="form"></div><div class="rowbtn"><button class="cancel" onclick="closeModal()">Annuler</button><button class="save" onclick="saveForm()">Enregistrer</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script>
-const todayKey=()=>new Date().toLocaleDateString('en-CA');
+
+const dateKey=d=>{
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+};
+
+const parseDateKey=s=>{
+  const [y,m,d]=s.split('-').map(Number);
+  return new Date(y,m-1,d);
+};
+
+const todayKey=()=>dateKey(new Date());
+let selectedDateKey=todayKey();
+
+const selectedKey=()=>selectedDateKey;
+
+const formatLongDate=s=>parseDateKey(s).toLocaleDateString('fr-FR',{
+  weekday:'long',
+  day:'numeric',
+  month:'long',
+  year:'numeric'
+});
+
+const addDays=(s,n)=>{
+  const d=parseDateKey(s);
+  d.setDate(d.getDate()+n);
+  return dateKey(d);
+};
+
 const seed={themes:[{id:'sport',name:'💪 Sport',color:'#7657f6'},{id:'bien',name:'🌿 Bien-être',color:'#43c6a5'},{id:'discipline',name:'🔥 Discipline',color:'#ff6b9a'}],goals:[
 {id:'g1',theme:'sport',name:'Pompes',type:'counter',unit:'pompes',value:0,target:30,logs:{}},
 {id:'g2',theme:'bien',name:'Lecture',type:'counter',unit:'minutes',value:0,target:20,logs:{}},
@@ -84,15 +149,126 @@ function getStreak(g) {
 
   return count;
 }
- function render(){
- const th=document.getElementById('themes');th.innerHTML=`<button class="theme-chip ${selected==='all'?'active':''}" onclick="selectTheme('all')">✨ Tout</button>`+db.themes.map(t=>`<button class="theme-chip ${selected===t.id?'active':''}" onclick="selectTheme('${t.id}')">${esc(t.name)}</button>`).join('');
- const list=db.goals.filter(g=>selected==='all'||g.theme===selected);document.getElementById('listTitle').textContent=selected==='all'?'Mes objectifs':(db.themes.find(t=>t.id===selected)?.name||'Mes objectifs');
- document.getElementById('count').textContent=db.goals.length;document.getElementById('done').textContent=db.goals.filter(g=>(g.logs[todayKey()]||0)>0).length;
- document.getElementById('goals').innerHTML=list.length?list.map(g=>{let v=g.logs[todayKey()]||0;
-let progress=g.type==='streak'?getStreak(g):v;
-let p=g.target?Math.min(100,progress/g.target*100):0;return `<div class="card"><div class="cardtop"><div><div class="goalname">${esc(g.name)}</div><div class="sub">${g.type==='streak'?'Compteur de jours':'Compteur quotidien'} · ${esc(g.unit)}</div></div><span class="tag">${g.type==='streak'?'SÉRIE':'QUOTIDIEN'}</span></div><div class="value-row"><div><span class="value">${v}</span> <span class="unit">${esc(g.unit)} aujourd'hui</span></div><div class="actions"><button class="round" onclick="change('${g.id}',-1)">−</button><button class="round plus" onclick="change('${g.id}',1)">＋</button><button class="round" style="font-size:15px" onclick="editGoal('${g.id}')">✎</button><button onclick="deleteGoal('${g.id}')">🗑️</button></div></div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="sub" style="margin-top:7px">${g.target?`${progress} / ${g.target} ${esc(g.unit)} · ${Math.round(p)} % de l'objectif`:'Aucun objectif fixé'}</div></div>`}).join(''):'<div class="empty">Aucun objectif ici. Ajoute ton premier défi ! ✨</div>';
- drawChart();
+ 
+function updateDatePicker(){
+  const today=todayKey();
+
+  document.getElementById('today').textContent=formatLongDate(selectedKey());
+  document.getElementById('selectedDayLabel').textContent=formatLongDate(selectedKey());
+
+  document.getElementById('selectedDayHint').textContent=
+    selectedKey()===today
+    ? 'Journée sélectionnée · aujourd’hui'
+    : 'Journée passée · tu peux modifier tes données';
+
+  const input=document.getElementById('dateInput');
+  input.value=selectedKey();
+  input.max=today;
+
+  const next=document.getElementById('nextDayBtn');
+  next.disabled=selectedKey()>=today;
+  next.style.opacity=next.disabled?'.35':'1';
+
+  const strip=document.getElementById('dayStrip');
+  strip.innerHTML='';
+
+  for(let i=6;i>=0;i--){
+    const key=addDays(today,-i);
+    const d=parseDateKey(key);
+    const b=document.createElement('button');
+
+    b.className='day-chip'+(key===selectedKey()?' active':'');
+    b.innerHTML=`${d.toLocaleDateString('fr-FR',{weekday:'short'})}<strong>${d.getDate()}</strong>`;
+    b.onclick=()=>selectDate(key);
+    strip.appendChild(b);
+  }
+
+  const active=strip.querySelector('.active');
+  if(active) active.scrollIntoView({block:'nearest',inline:'center'});
 }
+
+function selectDate(key){
+  if(!key)return;
+
+  if(key>todayKey()){
+    toast('Tu ne peux pas sélectionner une date future');
+    return;
+  }
+
+  selectedDateKey=key;
+  render();
+}
+
+function moveDay(delta){
+  const next=addDays(selectedKey(),delta);
+  if(next<=todayKey())selectDate(next);
+}
+
+function goToday(){
+  selectDate(todayKey());
+}
+
+
+function render(){
+  updateDatePicker();
+
+  const th=document.getElementById('themes');
+
+  th.innerHTML=`<button class="theme-chip ${selected==='all'?'active':''}" onclick="selectTheme('all')">✨ Tout</button>`+
+  db.themes.map(t=>`<button class="theme-chip ${selected===t.id?'active':''}" onclick="selectTheme('${t.id}')">${esc(t.name)}</button>`).join('');
+
+  const list=db.goals.filter(g=>selected==='all'||g.theme===selected);
+
+  document.getElementById('listTitle').textContent=
+    selected==='all'?'Mes objectifs':
+    (db.themes.find(t=>t.id===selected)?.name||'Mes objectifs');
+
+  document.getElementById('count').textContent=db.goals.length;
+
+  document.getElementById('done').textContent=
+    db.goals.filter(g=>(g.logs[selectedKey()]||0)>0).length;
+
+  document.getElementById('goals').innerHTML=list.length?
+  list.map(g=>{
+    let v=g.logs[selectedKey()]||0;
+    let progress=g.type==='streak'?getStreak(g):v;
+    let p=g.target?Math.min(100,progress/g.target*100):0;
+
+    return `<div class="card">
+      <div class="cardtop">
+        <div>
+          <div class="goalname">${esc(g.name)}</div>
+          <div class="sub">${g.type==='streak'?'Compteur de jours':'Compteur quotidien'} · ${esc(g.unit)}</div>
+        </div>
+        <span class="tag">${g.type==='streak'?'SÉRIE':'QUOTIDIEN'}</span>
+      </div>
+
+      <div class="value-row">
+        <div>
+          <span class="value">${v}</span>
+          <span class="unit">${esc(g.unit)} · ${formatLongDate(selectedKey())}</span>
+        </div>
+
+        <div class="actions">
+          <button class="round" onclick="change('${g.id}',-1)">−</button>
+          <button class="round plus" onclick="change('${g.id}',1)">＋</button>
+          <button class="round" style="font-size:15px" onclick="editGoal('${g.id}')">✎</button>
+          <button onclick="deleteGoal('${g.id}')">🗑️</button>
+        </div>
+      </div>
+
+      <div class="bar"><div class="fill" style="width:${p}%"></div></div>
+
+      <div class="sub" style="margin-top:7px">
+        ${g.target?`${progress} / ${g.target} ${esc(g.unit)} · ${Math.round(p)} % de l'objectif`:'Aucun objectif fixé'}
+      </div>
+    </div>`;
+  }).join(''):
+  '<div class="empty">Aucun objectif ici. Ajoute ton premier défi ! ✨</div>';
+
+  drawChart();
+}
+
  
 function buildGoalForm(g) {
   document.getElementById('form').innerHTML = `
@@ -127,7 +303,26 @@ function buildGoalForm(g) {
 }
 
 function selectTheme(id){selected=id;render()}
-function change(id,delta){let g=db.goals.find(x=>x.id===id),k=todayKey();g.logs[k]=Math.max(0,(g.logs[k]||0)+delta);save();render();if(delta>0)toast('Bien joué ! Chaque effort compte 💪')}
+ 
+function change(id,delta){
+  let g=db.goals.find(x=>x.id===id);
+  let k=selectedKey();
+
+  if(!g)return;
+  if(!g.logs)g.logs={};
+
+  g.logs[k]=Math.max(0,(g.logs[k]||0)+delta);
+
+  save();
+  render();
+
+  if(delta>0){
+    toast(k===todayKey()
+      ? 'Bien joué ! Chaque effort compte 💪'
+      : 'Ancienne journée mise à jour ✨');
+  }
+}
+ 
 function openTheme(){mode='theme';editing=null;document.getElementById('modalTitle').textContent='Créer un thème';document.getElementById('form').innerHTML='<label>Nom du thème</label><input id="fName" placeholder="Ex. 🧠 Apprentissage">';document.getElementById('modal').classList.add('show')}
 function openGoal(){mode='goal';editing=null;document.getElementById('modalTitle').textContent='Nouvel objectif';document.getElementById('form').innerHTML=`<label>Nom de l'objectif</label><input id="fName" placeholder="Ex. Pompes"><label>Thème</label><select id="fTheme">${db.themes.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select><label>Type de suivi</label><select id="fType"><option value="counter">Compteur quotidien (+1 à chaque action)</option><option value="streak">Compteur de jours / série</option></select><label>Unité</label><input id="fUnit" placeholder="Ex. répétitions, minutes, jours"><label>Objectif quotidien (facultatif)</label><input id="fTarget" type="number" min="0" placeholder="Ex. 30">`;document.getElementById('modal').classList.add('show')}
 
@@ -165,7 +360,34 @@ function openGoal(){mode='goal';editing=null;document.getElementById('modalTitle
 }
  function closeModal(){document.getElementById('modal').classList.remove('show')}
 function saveForm(){let name=document.getElementById('fName').value.trim();if(!name){toast('Ajoute un nom 🙂');return}if(mode==='theme'){let id='t'+Date.now();db.themes.push({id,name,color:'#7657f6'});selected=id}else{let g={id:editing||'g'+Date.now(),theme:document.getElementById('fTheme').value,name,type:document.getElementById('fType').value,unit:document.getElementById('fUnit').value.trim()||'fois',target:Number(document.getElementById('fTarget').value)||0,logs:editing?db.goals.find(x=>x.id===editing).logs:{}};if(editing)db.goals=db.goals.map(x=>x.id===editing?g:x);else db.goals.push(g)}save();closeModal();render();toast('Enregistré avec succès ✨')}
-function drawChart(){let c=document.getElementById('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let vals=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let k=d.toLocaleDateString('en-CA');vals.push(db.goals.reduce((s,g)=>s+(g.logs[k]||0),0))}let max=Math.max(5,...vals),pad=35;ctx.strokeStyle='#eeeaf8';ctx.lineWidth=1;for(let j=0;j<4;j++){let y=pad+j*(h-pad*2)/3;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke()}let pts=vals.map((v,i)=>({x:pad+i*(w-pad*2)/6,y:h-pad-v/max*(h-pad*2)}));ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle='#7657f6';ctx.lineWidth=5;ctx.lineCap='round';ctx.stroke();pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,6,0,7);ctx.fillStyle='#ff6b9a';ctx.fill();ctx.fillStyle='#77718c';ctx.font='16px sans-serif';ctx.textAlign='center';ctx.fillText(['D-6','D-5','D-4','D-3','D-2','Hier',"Auj."][i],p.x,h-7);ctx.fillStyle='#201b35';ctx.font='bold 14px sans-serif';ctx.fillText(vals[i],p.x,p.y-12)})}
+
+function drawChart(){
+ let c=document.getElementById('chart');
+ let ctx=c.getContext('2d');
+ let w=c.width,h=c.height;
+ ctx.clearRect(0,0,w,h);
+
+ let vals=[],labels=[];
+ for(let i=6;i>=0;i--){
+  let k=addDays(selectedKey(),-i);
+  let d=parseDateKey(k);
+  vals.push(db.goals.reduce((s,g)=>s+(g.logs[k]||0),0));
+  labels.push(d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}));
+ }
+
+ let max=Math.max(5,...vals),pad=35;
+ ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border');
+ ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--muted');
+ ctx.font='11px sans-serif';
+
+ for(let i=0;i<7;i++){
+  let x=pad+i*(w-pad*2)/6;
+  let barH=vals[i]/max*(h-45);
+  ctx.fillRect(x-8,h-25-barH,16,barH);
+  ctx.fillText(labels[i],x,h-7);
+ }
+}
+ 
 function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='elan-sauvegarde.json';a.click();URL.revokeObjectURL(a.href)}
 function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.themes||!x.goals)throw 0;db=x;save();render();toast('Sauvegarde importée')}catch(_){toast('Fichier invalide')}};r.readAsText(f)}
 function toast(s){let t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',1900)}
